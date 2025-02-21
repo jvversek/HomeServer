@@ -1,17 +1,27 @@
+// backend/index.js
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
+const Product = require('./models/product');
+const productRoutes = require('./routes/products');
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// CORS beállítások
+app.use(cors({
+  origin: 'http://192.168.50.71:3000',  // Frontend URL-je
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type']
+}));
+
+app.use(bodyParser.json());
+app.use('/api/products', productRoutes);
 
 const PORT = process.env.PORT || 8080;
 
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Hello from Backend!' });
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Backend server running on http://0.0.0.0:${PORT}`);
+// Adatbázis szinkronizálás és szerver indítás
+Product.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Backend running on http://192.168.50.71:${PORT}`);
+  });
 });
