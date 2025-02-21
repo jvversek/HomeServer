@@ -16,7 +16,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Frontend és Backend Kommunikáció</h1>
+      <h1>Frontend és a Backend Kommunikáció</h1>
       <p>Backend üzenet: {message}</p>
     </div>
   );
