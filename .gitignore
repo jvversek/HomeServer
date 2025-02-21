@@ -1,0 +1,27 @@
+# Docker és rendszerfájlok kizárása
+containerd/
+homeassistant/
+portainer/
+jellifyn/
+qbittorrent/
+fonts/
+nginx.conf
+
+# Node.js modulok
+node_modules/
+*.log
+
+# Docker-compose overrides
+docker-compose.jenkins.yaml
+docker-compose.override.yaml
+
+# System files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Általános érzékeny fájlok
+.env
+.env.local
+.env.*.local
