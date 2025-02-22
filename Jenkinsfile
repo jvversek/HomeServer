@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose.yaml' // Ha más a neve, módosítsd
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
     }
 
     stages {
@@ -15,26 +15,26 @@ pipeline {
                 )
             }
         }
-
-        stage('Build Docker Images') {
+        stage('Build Backend') {
             steps {
-                echo 'Building Docker Images...'
-                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} build --no-cache"
+                script {
+                    sh 'docker-compose -f docker-compose.backend.yaml build --no-cache'
+                }
             }
         }
-
+        stage('Build Frontend') {
+            steps {
+                script {
+                    sh 'docker-compose -f docker-compose.frontend.yaml build --no-cache'
+                }
+            }
+        }
         stage('Deploy') {
             steps {
-                echo 'Deploying Docker Containers...'
-                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} down"
-                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} up -d --force-recreate"
-            }
-        }
-
-        stage('Clean Up') {
-            steps {
-                echo 'Cleaning up unused Docker images...'
-                sh 'docker image prune -f'
+                script {
+                    sh 'docker-compose -f docker-compose.backend.yaml up -d'
+                    sh 'docker-compose -f docker-compose.frontend.yaml up -d'
+                }
             }
         }
     }
@@ -42,10 +42,11 @@ pipeline {
     post {
         always {
             echo 'Cleaning up temporary files...'
-            sh "docker-compose -f ${DOCKER_COMPOSE_FILE} down"
+            sh 'docker-compose -f docker-compose.backend.yaml down'
+            sh 'docker-compose -f docker-compose.frontend.yaml down'
         }
         success {
-            echo 'Build and Deploy succeeded!'
+            echo 'Build and deployment successful!'
         }
         failure {
             echo 'Build or Deploy failed.'
